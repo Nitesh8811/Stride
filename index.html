@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f0c1b"><title>Stride</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+*{box-sizing:border-box;margin:0}
+[hidden]{display:none!important}
+body{font:15px/1.4 ui-rounded,'SF Pro Rounded','Segoe UI',system-ui,sans-serif;color:#fff;background:#0f0c1b;height:100dvh;overflow:hidden}
+#app{max-width:480px;height:100dvh;margin:auto;display:flex;flex-direction:column;gap:8px;padding:max(10px,env(safe-area-inset-top)) 10px 0;position:relative;background:linear-gradient(160deg,#1e1b4b,#701a75 55%,#0f172a)}
+button,input,select{font:inherit;color:#fff}
+button{background:linear-gradient(135deg,#f472b640,#a855f733);border:1px solid #f472b659;border-radius:14px;padding:9px 12px;cursor:pointer}
+button:active{transform:scale(.96)}button:disabled{opacity:.35}
+input,select{width:100%;background:#0007;border:1px solid #f472b659;border-radius:12px;padding:9px;margin:4px 0 10px}
+select option{background:#1a1530}
+.c{background:#120e22d1;border:1px solid #f472b647;border-radius:20px;padding:12px}
+header{display:flex;gap:6px;justify-content:space-between}
+header button{padding:7px 9px;font-size:13px;background:#120e22d1}
+.row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.bar{height:10px;background:#ffffff1f;border-radius:9px;overflow:hidden;margin:6px 0}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#f472b6,#a78bfa,#818cf8);transition:width .4s}
+main{flex:1;overflow-y:auto;min-height:0}
+section{display:flex;flex-direction:column;gap:10px;padding-bottom:8px}
+small{font-size:12px;opacity:.75;display:block}
+.big{font-size:34px;font-weight:800;letter-spacing:-.02em}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
+.ts{text-align:center;font-size:13px;opacity:.85}
+nav{display:flex;gap:8px;padding:8px 0 max(8px,env(safe-area-inset-bottom))}
+nav button{flex:1;background:#120e22d1}nav .on{border-color:#34d399;color:#6ee7b7}
+dialog{background:#1a1530;color:#fff;border:1px solid #f472b6;border-radius:20px;padding:16px;width:min(92vw,420px);max-height:88dvh;margin:auto}
+dialog::backdrop{background:#000a}dialog h3{margin-bottom:10px}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;font-size:13px;margin:6px 0}
+.cal button{padding:8px 0;border-radius:50%}.cal .hit{background:#ec4899aa}.cal .sel{outline:2px solid #fff}
+.v{display:flex;gap:10px;align-items:center;padding:8px;margin:6px 0;border-radius:12px;background:#ffffff0d;opacity:.6}
+.v.on{opacity:1;background:#ec489933}.v b{width:28px;height:28px;border-radius:8px;background:#ffffff1f;display:grid;place-items:center}.v span{flex:1}.v em{font-size:12px;font-style:normal}
+.q{display:flex;align-items:center;gap:10px;padding:10px;border-radius:16px;background:#ffffff0d;margin-bottom:8px}
+.q.d{background:#10b98126}.q.d span{text-decoration:line-through;opacity:.8}.q span{flex:1;word-break:break-word}
+#pk{position:absolute;inset:0;z-index:5;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:space-around;text-align:center;padding:30px}
+.ring{--p:0;--k:#60a5fa;width:84px;height:84px;border-radius:50%;background:conic-gradient(var(--k) calc(var(--p)*1%),#ffffff1f 0);display:grid;place-items:center;flex:none;transition:background .4s}
+.ring div{width:66px;height:66px;border-radius:50%;background:#120e22;display:grid;place-items:center;font-size:26px}
+.pop{animation:pop .6s}@keyframes pop{40%{transform:scale(1.35) rotate(-8deg)}}
+.ov{position:absolute;inset:0;z-index:6;background:#000c;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;padding:24px}
+#cf{position:absolute;inset:0;width:100%;height:100%;z-index:7;pointer-events:none}
+@media(prefers-reduced-motion:reduce){.pop{animation:none}}
+#ch{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center;margin-top:8px}
+.cb{height:90px;display:flex;align-items:flex-end;background:#ffffff0f;border-radius:8px;overflow:hidden}
+.cb i{width:100%;background:linear-gradient(#a78bfa,#818cf8);border-radius:8px 8px 0 0;transition:height .5s}.cb i.ok{background:linear-gradient(#f472b6,#fb923c)}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}.tabs button{padding:6px;font-size:13px}
+section:not([hidden]),dialog[open]{animation:fin .3s}@keyframes fin{from{opacity:0;transform:translateY(8px)}}
+@media(prefers-reduced-motion:reduce){section,dialog{animation:none!important}}
+.m{padding:8px 12px;border-radius:16px;margin:6px 0;max-width:85%;width:fit-content;white-space:pre-wrap;word-break:break-word}
+.m.u{margin-left:auto;background:#a855f755}.m.b{background:#ffffff14}
+#cm{min-height:42dvh;max-height:50dvh;overflow-y:auto}
+</style></head><body>
+<div id="app">
+<header>
+ <button onclick="openV()">🏅 Lvl <b id="lv">1</b>/30</button>
+ <button onclick="openCal()">🔥 <b id="st">0</b> days</button>
+ <button onclick="pocket(1)">🚶 Walk</button>
+ <button onclick="TH.showModal()" aria-label="Themes">🎨</button>
+ <button onclick="openGoals()" aria-label="Goals and backup">⚙️</button>
+</header>
+<div class="c row"><button id="pv" onclick="day(-1)" aria-label="Previous day">◀</button><b id="dt"></b><button id="nx" onclick="day(1)" aria-label="Next day">▶</button></div>
+<div class="c row"><b>XP</b><div class="bar" style="flex:1"><i id="xb"></i></div><small id="xt"></small></div>
+<main>
+<section id="s0">
+ <div class="c row" onclick="tab(2)" style="gap:12px;cursor:pointer"><div id="bf" style="font-size:52px">🙂</div><p id="bm" style="flex:1"></p></div>
+ <p id="ts" class="ts">Your data is saved on this phone</p>
+ <div class="c"><div class="row"><div><small>💧 Hydration</small><b>Daily water</b></div><button onclick="openGoals()">Set goal</button></div>
+  <div class="row" onclick="detail('water')" style="cursor:pointer"><div class="ring" id="wb"><div>💧</div></div><div style="flex:1;padding-left:14px"><b id="wv" class="big">0</b> ml<small>of <span id="wg"></span> ml</small><small>Tap for details ›</small></div></div>
+  <div class="g2"><button onclick="water(250)">+250 ml</button><button onclick="water(500)">+500 ml</button></div></div>
+ <div class="c"><div class="row"><div><small>👣 Movement</small><b>Daily steps</b></div><button onclick="openGoals()">Set goal</button></div>
+  <div class="row" onclick="detail('steps')" style="cursor:pointer"><div class="ring" id="sb" style="--k:#c084fc"><div>👣</div></div><div style="flex:1;padding-left:14px"><b id="sv" class="big">0</b> steps<small>of <span id="sg"></span></small><small>Tap for details ›</small></div></div>
+  <div class="g2"><small id="km"></small><small id="kc"></small></div>
+  <div class="g2"><button onclick="addSteps(1000)">+1,000 steps</button><button id="se" onclick="sensor(!S.sensor)"></button></div></div>
+ <div class="c"><div class="row"><div><small>⚖️ Weight</small><b>Target tracking</b></div><button onclick="openGoals()">Update weight</button></div>
+  <div onclick="detail('weight')" style="cursor:pointer"><p><b id="wc" class="big">0</b> kg now · goal <span id="wi"></span> kg</p><div class="bar"><i id="wp"></i></div><small>Tap for details ›</small></div><small id="wl"></small></div>
+ <div class="c"><b>Last 7 days</b><div class="tabs"><button onclick="chart('steps')">Steps</button><button onclick="chart('water')">Water</button><button onclick="chart('weight')">Weight</button></div><div id="ch"></div><small id="cn" style="text-align:center;margin-top:6px"></small></div>
+</section>
+<section id="s1" hidden>
+ <div class="c row"><div><small>Today's progress</small><b id="qc"></b></div><button onclick="TQ.showModal()">+ Add quest</button></div>
+ <div id="ql"></div>
+</section>
+<section id="s2" hidden>
+ <div class="row"><small>Stride sees today’s water, steps and streak. Never your weight. 🔒</small><button onclick="clearChat()" aria-label="Clear chat">🗑</button></div>
+ <div id="cm" class="c"></div>
+ <div class="tabs" style="grid-template-columns:repeat(2,1fr)"><button onclick="ask('How am I doing?')">How am I doing?</button><button onclick="ask('Water tip')">Water tip</button><button onclick="ask('Walking ideas')">Walking ideas</button><button onclick="ask('Motivate me')">Motivate me</button></div>
+ <div class="row"><input id="ci" placeholder="Talk to Stride…" maxlength="500" style="margin:0" onkeydown="if(event.key==='Enter')send()"><button onclick="send()">Send</button></div>
+</section>
+</main>
+<nav><button id="n0" class="on" onclick="tab(0)">🏠 Home</button><button id="n1" onclick="tab(1)">✅ Quests</button><button id="n2" onclick="tab(2)">💬 Stride</button></nav>
+<div id="LU" class="ov" hidden><small>Level up!</small><div id="lun" style="font-size:56px;font-weight:800"></div><b id="lub"></b><button style="width:100%;margin-top:14px" onclick="LU.hidden=true">Continue</button></div>
+<canvas id="cf"></canvas>
+<div id="pk" hidden>
+ <div><b style="color:#34d399">POCKET WALK ON</b><small>Screen stays awake. Steps count while this page stays open.</small></div>
+ <div><div id="pks" style="font-size:64px;font-weight:800">0</div>steps today</div>
+ <button onclick="pocket(0)" style="width:100%;padding:14px">Tap to exit</button>
+</div>
+</div>
+
+<dialog id="V"><h3>🏆 Achievements</h3>
+ <div class="g2" style="grid-template-columns:repeat(3,1fr)"><button onclick="vf(0)">All</button><button onclick="vf(1)">Unlocked</button><button onclick="vf(2)">Remaining</button></div>
+ <div id="vl" style="max-height:50dvh;overflow-y:auto"></div><button style="width:100%;margin-top:8px" onclick="V.close()">Close</button></dialog>
+<dialog id="CAL"><div class="row"><button onclick="cmv(-1)" aria-label="Previous month">◀</button><b id="cml"></b><button onclick="cmv(1)" aria-label="Next month">▶</button></div>
+ <div class="cal"><i>Su</i><i>Mo</i><i>Tu</i><i>We</i><i>Th</i><i>Fr</i><i>Sa</i></div><div class="cal" id="cg"></div>
+ <small>Pink = daily goal met. Future days are locked.</small>
+ <div class="g2"><button onclick="act=today();CAL.close();render()">Today</button><button onclick="CAL.close()">Close</button></div></dialog>
+<dialog id="GL"><h3>Goals &amp; backup</h3>
+ <label>Daily water goal (ml)<input id="gw" type="number" min="250" step="250"></label>
+ <label>Daily steps goal<input id="gs" type="number" min="500" step="500"></label>
+ <label>Current weight (kg)<input id="gc" type="number" min="20" max="300" step="0.1"></label>
+ <label>Ideal weight (kg)<input id="gd" type="number" min="20" max="300" step="0.1"></label>
+ <div class="g2"><button onclick="GL.close()">Cancel</button><button onclick="saveGoals()">Save</button></div>
+ <div class="g2"><button onclick="exp()">Back up data</button><button onclick="$('im').click()">Restore backup</button></div>
+ <label>Water reminder every<select id="rm" onchange="if(S.rem)S.rem.mins=+this.value;sv()"><option value="60">1 hour</option><option value="120" selected>2 hours</option><option value="180">3 hours</option></select></label>
+ <button id="rt" style="width:100%" onclick="remToggle()"></button>
+ <button id="mu" style="width:100%;margin-top:8px" onclick="S.mute=!S.mute;mus();sv()"></button>
+ <button style="width:100%;margin-top:8px" onclick="if(confirm('Erase all your data and start over?')){self.wipe=1;localStorage.removeItem(K);location.reload()}">Start fresh</button>
+ <input id="im" type="file" accept=".json" hidden onchange="imp(event)"></dialog>
+<dialog id="TQ"><h3>New quest</h3>
+ <label>Name<input id="tn" placeholder="e.g. Read 15 minutes"></label>
+ <label>XP reward<select id="tx"><option value="15">+15 XP · quick habit</option><option value="25" selected>+25 XP · standard</option><option value="40">+40 XP · high effort</option><option value="50">+50 XP · major</option></select></label>
+ <div class="g2"><button onclick="TQ.close()">Cancel</button><button onclick="addTask()">Save quest</button></div></dialog>
+<dialog id="TH"><h3>Themes</h3>
+ <div class="g2"><button onclick="theme('fuji')">Fuji Twilight</button><button onclick="theme('alpine')">Alpine Mist</button><button onclick="theme('golden')">Golden Ridge</button><button onclick="theme('aurora')">Aurora Lake</button></div>
+ <button style="width:100%;margin-top:8px" onclick="$('gi').click()">📷 Use my photo</button>
+ <input id="gi" type="file" accept="image/*" hidden onchange="photo(event)"></dialog>
+<dialog id="DT"><div class="row"><b id="dtt"></b><button onclick="DT.close()" aria-label="Close">✕</button></div>
+ <div id="dtn" class="big"></div><small id="dts"></small>
+ <p id="dtm" class="c" style="margin:10px 0"></p>
+ <div class="tabs" style="grid-template-columns:repeat(2,1fr)"><button onclick="dper(7)">7 days</button><button onclick="dper(30)">30 days</button></div>
+ <div id="dtg"></div><div id="dtx" class="g2"></div><div id="dta" style="margin-top:10px"></div></dialog>
+<dialog id="WE\ oncancel="event.preventDefault()"><h3>Hi, I’m Stride! 👋</h3><small>Tell me a little about you. You can change this later.</small>
+ <label>Your name<input id="wn" maxlength="20" placeholder="e.g. Alex"></label>
+ <label>Daily water goal (ml)<input id="ww" type="number" value="2000" step="250"></label>
+ <label>Daily steps goal<input id="ws" type="number" value="7000" step="500"></label>
+ <label>Current weight (kg)<input id="wk" type="number" value="68" step="0.1"></label>
+ <label>Ideal weight (kg)<input id="wd" type="number" value="62" step="0.1"></label>
+ <button style="width:100%" onclick="welcome()">Let’s go</button></dialog>
+
+<script>
+const $=i=>document.getElementById(i),K='stride_v1',pad=n=>String(n).padStart(2,'0');
+const key=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const parse=s=>{const[a,b,c]=s.split('-');return new Date(+a,b-1,+c)};
+const today=()=>key(new Date());
+const esc=s=>s.replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';');
+const N="Alpine Novice,Fresh Mist,Crystal Spring,Trail Scout,Mountain Walker,Pine Whisperer,Dawn Strider,Golden Ember,Altitude Climber,Stone Guardian,Twilight Seeker,Waterfall Sprinter,Frost Runner,Cloud Surfer,Highland Sentinel,Zen Harmonizer,Storm Strider,Bamboo Master,Sunburst Climber,Summit Conqueror,Mist Weaver,Iron Will,Starlight Voyager,Glacier Monarch,Dragon's Ascent,Celestial Nomad,Timeless Spirit,Fuji Sovereign,Ascended Legend,Master of Eternity".split(',');
+const TH_={fuji:'linear-gradient(160deg,#1e1b4b,#701a75 55%,#0f172a)',alpine:'linear-gradient(160deg,#0c4a6e,#334155 55%,#0f172a)',golden:'linear-gradient(160deg,#7c2d12,#b45309 50%,#1c1917)',aurora:'linear-gradient(160deg,#022c22,#0e7490 55%,#1e1b4b)'};
+const req=l=>Math.round(100+(l-1)*85+Math.pow(l,1.45)*12);
+
+// ---- saved data (also picks up data from the old version) ----
+let S;try{S=JSON.parse(localStorage.getItem(K))}catch(e){}
+if(!S){const o=()=>null;
+ S={logs:o('hb_timeline_logs_2026')||{},tasks:o('hb_custom_tasks')||[{id:'t1',title:'Morning fresh air & 10 min stroll',xp:25},{id:'t2',title:'Mindful breathing',xp:20},{id:'t3',title:'Drink a glass of warm herbal tea',xp:15}],xp:o('hb_xp')??0,level:o('hb_level')||1,wg:o('hb_water_goal')||2000,sg:o('hb_steps_goal')||7000,w:o('hb_current_weight')||68,ideal:o('hb_ideal_weight')||62,sensor:true,theme:'fuji',bg:null};
+ S.start=S.w}
+let tm;const sv=()=>{clearTimeout(tm);tm=setTimeout(save,800)};
+function save(){if(self.wipe)return;try{localStorage.setItem(K,JSON.stringify(S))}catch(e){toast('Storage is full. Try a smaller photo.')}}
+addEventListener('pagehide',save);
+const log=d=>{const l=S.logs[d]||(S.logs[d]={});l.water??=0;l.steps??=0;l.done??=[];l.xpq??=[];l.xpw??=0;l.xps??=0;l.wt??=0;return l};
+let act=today(),tt;
+function toast(m){$('ts').textContent=m;clearTimeout(tt);tt=setTimeout(()=>$('ts').textContent='Your data is saved on this phone',2500)}
+
+// ---- xp, water, steps ----
+function xp(n){const b=S.level;S.xp+=n;while(S.xp>=req(S.level)&&S.level<30){S.xp-=req(S.level);S.level++}if(S.level>b){$('lun').textContent=S.level;$('lub').textContent=N[S.level-1];LU.hidden=false;beep([523,659,784,1047]);confetti()}}
+function water(n){if(act>today())return;const l=log(act),o=l.water;l.water+=n;if(o<S.wg&&l.water>=S.wg)party('Water goal reached! 💧');const g=Math.min(10,50-l.xpw);if(g>0){l.xpw+=g;xp(g)}render();toast('+'+n+' ml logged')}
+function steps(n,d){const l=log(d),o=l.steps;l.steps+=n;if(o<S.sg&&l.steps>=S.sg)party('Steps goal reached! 🎉');const g=Math.min(Math.floor(l.steps/100)-Math.floor(o/100),100-l.xps);if(g>0){l.xps+=g;xp(g)}}
+function addSteps(n){if(act>today())return;steps(n,act);render();toast('+'+n+' steps logged')}
+
+// ---- buddy, celebrations, welcome ----
+function buddy(l){const f=(a,b)=>Math.min(1,a/b),q=S.tasks.length?S.tasks.filter(x=>l.done.includes(x.id)).length/S.tasks.length:0,a=(f(l.water,S.wg)+f(l.steps,S.sg)+q)/3,i=a>=1?4:a>.7?3:a>.35?2:a>.05?1:0,h=new Date().getHours(),g=h<12?'Good morning':h<18?'Good afternoon':'Good evening',n=S.name?', '+S.name:'';
+ $('bf').textContent=['😴','🙂','😊','😄','🤩'][i];
+ $('bm').textContent=[g+n+'! How about a glass of water to start?','Nice start'+n+'! Keep it going.','You’re on a roll. Halfway there!','So close! Just a little more.','You did it all today'+n+'! I’m so proud. 🎉'][i]}
+let ac;function beep(f){if(S.mute)return;try{ac=ac||new AudioContext();f.forEach((x,i)=>{const o=ac.createOscillator(),g=ac.createGain(),t=ac.currentTime+i*.11;o.type='triangle';o.frequency.value=x;g.gain.setValueAtTime(.2,t);g.gain.exponentialRampToValueAtTime(.001,t+.35);o.connect(g);g.connect(ac.destination);o.start(t);o.stop(t+.35)})}catch(e){}}
+function pop(){const e=$('bf');e.classList.remove('pop');void e.offsetWidth;e.classList.add('pop')}
+function party(m){toast(m);beep([523,659,784]);confetti();pop()}
+function confetti(){if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;const c=$('cf'),x=c.getContext('2d');c.width=c.offsetWidth;c.height=c.offsetHeight;
+ const P=[...Array(80)].map(()=>({x:c.width/2,y:c.height/2,vx:(Math.random()-.5)*14,vy:Math.random()*-14,w:6+Math.random()*6,h:4+Math.random()*4,r:Math.random()*6,k:['#f59e0b','#ec4899','#8b5cf6','#10b981','#38bdf8'][Math.random()*5|0]}));
+ (function f(){x.clearRect(0,0,c.width,c.height);let n=0;P.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.3;p.r+=.2;if(p.y<c.height+20){n++;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.k;x.fillRect(-p.w/2,-p.h/2,p.w,p.h);x.restore()}});if(n)requestAnimationFrame(f)})()}
+function welcome(){const n=$('wn').value.trim();if(!n)return $('wn').focus();S.name=n;const a=+$('ww').value,b=+$('ws').value,c=+$('wk').value,d=+$('wd').value;if(a>0)S.wg=a;if(b>0)S.sg=b;if(c>=20)S.w=c;if(d>=20)S.ideal=d;S.start=S.w;log(today()).wkg=S.w;WE.close();render()}
+function mus(){$('mu').textContent=S.mute?'🔇 Sound off':'🔊 Sound on'}
+
+// ---- 7-day chart & reminders ----
+let cm2='steps';
+function chart(m){if(m)cm2=m;const D=[...Array(7)].map((_,i)=>{const d=new Date();d.setDate(d.getDate()-6+i);return d}),k={steps:'steps',water:'water',weight:'wkg'}[cm2],v=D.map(d=>(S.logs[key(d)]||{})[k]||0),g=cm2=='steps'?S.sg:cm2=='water'?S.wg:0,w=cm2=='weight',hi=Math.max(g,...v,1),lo=Math.min(...v.filter(x=>x),hi);
+ $('ch').innerHTML=D.map((d,i)=>`<div><div class="cb"><i class="${g&&v[i]>=g?'ok':''}" style="height:${!v[i]?0:w?(hi>lo?30+(v[i]-lo)/(hi-lo)*70:60):v[i]/hi*100}%"></i></div><small>${'SMTWTFS'[d.getDay()]}</small><small>${v[i]?(cm2=='steps'&&v[i]>=1000?(v[i]/1000).toFixed(1)+'k':v[i]):'–'}</small></div>`).join('');
+ $('cn').textContent=w?'Weight (kg) on days you updated it.':'Pink bars reached your goal.'}
+function remind(){if(!S.rem||!S.rem.on||typeof Notification==='undefined'||Notification.permission!=='granted')return;
+ const h=new Date().getHours(),n=Date.now(),l=log(today());
+ if(h<8||h>=21||l.water>=S.wg||n-(S.remLast||0)<S.rem.mins*6e4)return;S.remLast=n;
+ const t='Time for some water 💧',o={body:(S.name||'Friend')+', you’re at '+l.water+' of '+S.wg+' ml.'};
+ navigator.serviceWorker&&navigator.serviceWorker.ready?navigator.serviceWorker.ready.then(r=>r.showNotification(t,o)):new Notification(t,o);sv()}
+function remToggle(){if(typeof Notification==='undefined')return alert('This browser does not support notifications.');
+ if(S.rem&&S.rem.on){S.rem.on=false;remUi();return sv()}
+ Notification.requestPermission().then(p=>{if(p!=='granted')return alert('Notifications are blocked. Allow them in your browser settings to get reminders.');S.rem={on:true,mins:+$('rm').value||120};S.remLast=Date.now();remUi();sv()})}
+function remUi(){$('rt').textContent=S.rem&&S.rem.on?'🔔 Reminders on (tap to turn off)':'🔕 Turn on water reminders'}
+
+// ---- detail window (tap a card) ----
+let DM='water',DP=7;
+const stat=(a,b)=>`<div class="c"><small>${a}</small><b>${b}</b></div>`;
+function lsvg(v,g,z){const W=320,H=130,P=10,lo=z?0:Math.min(...v,g)-1,mx=Math.max(...v,g,lo+1),X=i=>P+i*(W-2*P)/Math.max(1,v.length-1),Y=x=>H-P-(x-lo)/(mx-lo)*(H-2*P),pt=v.map((x,i)=>X(i)+','+Y(x)).join(' ');
+ return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;margin:10px 0"><line x1="${P}" x2="${W-P}" y1="${Y(g)}" y2="${Y(g)}" stroke="#34d399" stroke-dasharray="4 4" opacity=".8"/><polygon points="${X(0)},${H-P} ${pt} ${X(v.length-1)},${H-P}" fill="#a78bfa33"/><polyline points="${pt}" fill="none" stroke="#c4b5fd" stroke-width="3" stroke-linejoin="round"/>${v.map((x,i)=>`<circle cx="${X(i)}" cy="${Y(x)}" r="${v.length>14?2:4}" fill="${z&&x>=g?'#f472b6':'#c4b5fd'}"/>`).join('')}</svg><small style="text-align:center">Dashed green line = your goal. Pink dots = goal reached.</small>`}
+function dper(p){DP=p;detail(DM)}
+function detail(m){DM=m;const w=m=='weight',k={water:'water',steps:'steps',weight:'wkg'}[m],g={water:S.wg,steps:S.sg,weight:S.ideal}[m],u={water:'ml',steps:'steps',weight:'kg'}[m],l=log(act),
+ D=[...Array(DP)].map((_,i)=>{const d=new Date();d.setDate(d.getDate()-DP+1+i);return key(d)}),
+ all=D.map(d=>(S.logs[d]||{})[k]||0),used=all.filter(x=>x),v=w?(used.length?used:[S.w]):all,
+ sum=a=>a.reduce((x,y)=>x+y,0),avg=used.length?sum(used)/used.length:0,h=Math.floor(used.length/2),
+ a1=h?sum(used.slice(0,h))/h:0,a2=h?sum(used.slice(h))/(used.length-h):0,cur=w?S.w:l[k];
+ let tr,msg;
+ if(w){const a=Math.abs(S.start-S.ideal),b=Math.abs(S.w-S.ideal);tr=b<a-.05?1:Math.abs(b-a)<=.05?0:-1;
+  msg=b<.05?['🎉 Goal reached','You’re at your ideal weight. Keeping gentle, steady habits is the next win.']:tr>0?['📈 Moving toward your goal','Nice progress. Small, steady changes add up.']:tr==0?['➡️ Holding steady','Steady is okay. Weight moves up and down naturally, so look at the long run.']:['🌱 Room to grow','Weight moves for many normal reasons. Be kind to yourself and keep your habits gentle.']}
+ else if(!used.length){tr=0;msg=['🌱 Fresh start','Nothing logged in this period yet. Add your first one whenever you’re ready. Every bit counts.']}
+ else{tr=used.length<2?0:a2>a1*1.05?1:a2<a1*.95?-1:0;
+  msg=cur>=g?['🎉 Goal reached','You hit your goal. Lovely work!']:tr>0?['📈 Trending up','Your recent days are stronger than the ones before. Keep going at your own pace.']:tr<0?['🌱 Room to grow','Some days are quieter than others, and that’s completely normal. One small step today is a great restart.']:['➡️ Holding steady','You’re steady, and consistency beats perfection.']}
+ $('dtt').textContent={water:'💧 Water',steps:'👣 Steps',weight:'⚖️ Weight'}[m];
+ $('dtn').textContent=(w?cur.toFixed(1):cur.toLocaleString())+' '+u;
+ $('dts').textContent=(w?'Now':parse(act).toLocaleDateString('en-US',{month:'short',day:'numeric'}))+' · goal '+g.toLocaleString()+' '+u+(w?'':' · '+Math.round(cur/g*100)+'%');
+ $('dtm').innerHTML='<b>'+msg[0]+'</b><br>'+msg[1];$('dtm').style.borderColor=tr>0?'#34d399':tr<0?'#fbbf24':'#f472b647';
+ $('dtg').innerHTML=lsvg(v,g,!w);
+ $('dtx').innerHTML=w?stat('Started at',S.start.toFixed(1)+' kg')+stat('Now',S.w.toFixed(1)+' kg')+stat('Change',(S.w>S.start?'+':'')+(S.w-S.start).toFixed(1)+' kg')+stat('To goal',Math.abs(S.w-S.ideal).toFixed(1)+' kg')
+  :stat('Average per day',Math.round(avg).toLocaleString()+' '+u)+stat('Best day',(used.length?Math.max(...used):0).toLocaleString())+stat('Goal reached',all.filter(x=>x>=g).length+' of '+DP+' days')+stat('Days logged',used.length+' of '+DP);
+ const ch={water:[100,250,330,500,750],steps:[500,1000,2000,5000]}[m];
+ $('dta').innerHTML=w?'<input id="dti" type="number" step="0.1" min="20" max="300" placeholder="Today’s weight (kg)"><button style="width:100%" onclick="wsave()">Save weight</button>'
+  :'<small>Quick add</small><div class="tabs" style="grid-template-columns:repeat(auto-fit,minmax(64px,1fr))">'+ch.map(n=>`<button onclick="chip(${n})">+${n}</button>`).join('')+'</div><input id="dti" type="number" min="1" placeholder="Your own amount ('+u+')" style="margin-top:10px"><div class="g2"><button onclick="dadd(-1)">− Remove</button><button onclick="dadd(1)">+ Add</button></div>';
+ if(!DT.open)DT.showModal()}
+function chip(n){if(act>today())return;const l=log(act);
+ if(n>0){DM=='water'?water(n):addSteps(n)}else{const k=DM=='water'?'water':'steps';l[k]=Math.max(0,l[k]+n);render()}detail(DM)}
+function dadd(sg){const n=Math.min(Math.round(+$('dti').value),DM=='water'?5000:100000);if(!(n>0))return $('dti').focus();chip(sg*n)}
+function wsave(){const c=+$('dti').value;if(!(c>=20&&c<=300))return $('dti').focus();S.w=c;const l=log(today());l.wkg=c;if(!l.wt){l.wt=1;xp(20)}render();detail('weight')}
+
+// ---- AI buddy chat ----
+const AI_URL='';/* paste your Worker link between the quotes, e.g. https://health-buddy-ai.yourname.workers.dev */
+let chat=S.chat||[],busy=false;
+function addMsg(r,t){const d=document.createElement('div');d.className='m '+r;d.textContent=t;$('cm').append(d);$('cm').scrollTop=1e9;return d}
+function initChat(){$('cm').innerHTML='';addMsg('b','Hi! I’m Stride, a helper built into this app. Ask me about water, walking or habits, or just say hi. 😊');chat.forEach(m=>addMsg(m.role=='user'?'u':'b',m.content))}
+function clearChat(){if(confirm('Clear this chat?')){chat=[];S.chat=[];initChat();sv()}}
+function ask(t){$('ci').value=t;send()}
+function localReply(t){t=t.toLowerCase();const l=log(today()),n=S.name?' '+S.name:'',wl=Math.max(0,S.wg-l.water),sl=Math.max(0,S.sg-l.steps),pick=a=>a[Math.random()*a.length|0],rx=r=>r.test(t);
+ if(rx(/hurt myself|suicid|end my life|kill myself|self.?harm/))return 'I’m really glad you told me. You matter. Please contact your local emergency number or a crisis line right now, and tell someone you trust so you’re not alone with this. 💛';
+ if(rx(/how am i|progress|doing/))return `Here’s your day${n}: ${l.water} of ${S.wg} ml water, ${l.steps.toLocaleString()} of ${S.sg.toLocaleString()} steps, and a ${streak()}-day streak. ${wl<=0&&sl<=0?'You’ve hit both goals. Amazing! 🎉':'Every bit counts, and you’re doing fine. 🌱'}`;
+ if(rx(/water|thirst|drink/))return wl>0?`You have ${wl} ml to go. A glass is about 250 ml, so ${Math.ceil(wl/250)} more should do it. ${pick(['Try a glass after each meal.','A bottle on your desk helps a lot.','A slice of lemon makes plain water more fun.'])}`:'You’ve reached your water goal today. Lovely! 💧';
+ if(rx(/step|walk|exercise|move/))return sl>0?`${sl.toLocaleString()} steps to go. ${pick(['A 10-minute walk is roughly 1,000 steps.','Try taking a phone call while you walk.','Park a bit farther away, or take the stairs.'])}`:'Steps goal done! Enjoy a good stretch. 👣';
+ if(rx(/\b(sad|tired|stress|stressed|anxious|lonely|down|upset)\b/))return pick(['I’m sorry today feels heavy. A slow breath, a glass of water or a short walk can help a little. Talking with a friend or family member can help too. 💛','That sounds tough. You don’t have to do everything today. Maybe a few deep breaths and one small thing? And reach out to someone you trust. 💛']);
+ if(rx(/motivat|lazy|give up|can.?t|hard/))return pick(['Small steps count. Just one glass of water or a 5-minute walk is a win. 🌟','You don’t need a perfect day, just a start. I’m cheering for you! 🎉','Quiet days happen to everyone. Tomorrow is a fresh page. 🌱']);
+ if(rx(/\b(hi|hello|hey)\b/))return `Hey${n}! 😊 How’s your day going?`;
+ if(rx(/thank/))return 'Anytime! 😊';
+ return pick(['I’m a simple helper for now. I know about your water, steps and motivation. Try “How am I doing?”','I might not understand that one yet. Try “Water tip”, “Walking ideas” or “Motivate me”.'])}
+async function send(){const t=$('ci').value.trim();if(!t||busy)return;$('ci').value='';addMsg('u',t);chat.push({role:'user',content:t});
+ if(!AI_URL){setTimeout(()=>{const a=localReply(t);addMsg('b',a);chat.push({role:'assistant',content:a});S.chat=chat.slice(-20);sv()},500);return}
+ busy=true;const w=addMsg('b','…'),l=log(today());
+ const ctx={name:S.name||'',water:l.water,waterGoal:S.wg,steps:l.steps,stepGoal:S.sg,level:S.level,streak:streak(),questsDone:S.tasks.filter(x=>l.done.includes(x.id)).length,quests:S.tasks.length};
+ try{const r=await fetch(AI_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:chat.slice(-12),ctx})}),j=await r.json(),a=j.reply||'Hmm, I couldn’t answer just now. Please try again in a moment.';
+  w.textContent=a;chat.push({role:'assistant',content:a})}
+ catch(e){w.textContent='I can’t reach the internet right now. I’ll be here when you’re back online. 🌿'}
+ S.chat=chat.slice(-20);busy=false;sv()}
+
+// ---- quests ----
+function tog(id){if(act>today())return;const l=log(act),i=l.done.indexOf(id);
+ if(i<0){l.done.push(id);beep([660,880]);pop();if(!l.xpq.includes(id)){l.xpq.push(id);xp(S.tasks.find(t=>t.id===id).xp)}}else l.done.splice(i,1);render()}
+function addTask(){const n=$('tn').value.trim();if(!n)return;S.tasks.push({id:'t'+Date.now(),title:n,xp:+$('tx').value});$('tn').value='';TQ.close();render()}
+function del(id){if(confirm('Remove this quest?')){S.tasks=S.tasks.filter(t=>t.id!==id);render()}}
+
+// ---- screen ----
+function streak(){let n=0;const d=new Date();for(;;){const l=S.logs[key(d)];if(l&&(l.water>=S.wg||l.steps>=S.sg))n++;else if(key(d)!==today())break;d.setDate(d.getDate()-1)}return n}
+function render(){
+ const l=log(act),t=today(),R=req(S.level);
+ $('lv').textContent=S.level;$('st').textContent=streak();
+ $('xb').style.width=Math.min(100,S.xp/R*100)+'%';$('xt').textContent=S.xp+'/'+R;
+ $('dt').textContent=parse(act).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+(act===t?' · Today':'');
+ $('nx').disabled=act>=t;
+ $('wv').textContent=l.water;$('wg').textContent=S.wg;$('wb').style.setProperty('--p',Math.min(100,l.water/S.wg*100));
+ $('sv').textContent=l.steps.toLocaleString();$('sg').textContent=S.sg.toLocaleString();$('sb').style.setProperty('--p',Math.min(100,l.steps/S.sg*100));
+ $('km').textContent='📍 '+(l.steps*0.00076).toFixed(2)+' km';$('kc').textContent='🔥 '+Math.round(l.steps*0.045*S.w/68)+' kcal';
+ const tot=S.start-S.ideal,p=tot?Math.max(0,Math.min(100,(S.start-S.w)/tot*100)):100,df=Math.abs(S.w-S.ideal).toFixed(1);
+ $('wc').textContent=S.w.toFixed(1);$('wi').textContent=S.ideal.toFixed(1);$('wp').style.width=p+'%';
+ $('wl').textContent=df==='0.0'?'Goal reached! 🎉':df+' kg to go';
+ const dn=S.tasks.filter(x=>l.done.includes(x.id)).length;
+ $('qc').textContent=dn+' / '+S.tasks.length+' done';
+ $('ql').innerHTML=S.tasks.length?S.tasks.map(x=>{const d=l.done.includes(x.id);
+  return `<div class="q ${d?'d':''}"><button onclick="tog('${x.id}')" ${act>t?'disabled':''} aria-label="Done">${d?'✓':'○'}</button><span>${esc(x.title)}</span><small>+${x.xp} XP</small><button onclick="del('${x.id}')" aria-label="Delete">🗑</button></div>`}).join(''):'<p class="ts">No quests yet. Tap “+ Add quest” to make your first habit.</p>';
+ buddy(l);chart();sv()}
+function day(n){const d=parse(act);d.setDate(d.getDate()+n);const k=key(d);if(k>today())return;act=k;render()}
+function tab(i){[0,1,2].forEach(j=>{$('s'+j).hidden=j!=i;$('n'+j).className=j==i?'on':''});if(i==2)$('cm').scrollTop=1e9}
+
+// ---- achievements & calendar ----
+let flt=0,cm=new Date();
+function drawV(){$('vl').innerHTML=N.map((n,i)=>{const d=S.level>i;return(flt==1&&!d)||(flt==2&&d)?'':`<div class="v ${d?'on':''}"><b>${i+1}</b><span>${n}</span><em>${d?'DONE':'Lvl '+(i+1)}</em></div>`}).join('')}
+function vf(f){flt=f;drawV()}function openV(){drawV();V.showModal()}
+function openCal(){cm=parse(act);cm.setDate(1);drawCal();CAL.showModal()}
+function cmv(n){cm.setMonth(cm.getMonth()+n);drawCal()}
+function drawCal(){const y=cm.getFullYear(),m=cm.getMonth(),g=$('cg');
+ $('cml').textContent=cm.toLocaleDateString('en-US',{month:'long',year:'numeric'});
+ g.innerHTML='<i></i>'.repeat(new Date(y,m,1).getDay());
+ for(let d=1;d<=new Date(y,m+1,0).getDate();d++){const k=y+'-'+pad(m+1)+'-'+pad(d),l=S.logs[k],b=document.createElement('button');
+  b.textContent=d;b.disabled=k>today();b.className=(l&&(l.water>=S.wg||l.steps>=S.sg)?'hit ':'')+(k===act?'sel':'');
+  b.onclick=()=>{act=k;CAL.close();render()};g.append(b)}}
+
+// ---- goals, backup, themes ----
+function openGoals(){$('gw').value=S.wg;$('gs').value=S.sg;$('gc').value=S.w;$('gd').value=S.ideal;mus();remUi();$('rm').value=S.rem?S.rem.mins:120;GL.showModal()}
+function saveGoals(){const a=+$('gw').value,b=+$('gs').value,c=+$('gc').value,d=+$('gd').value;
+ if(a>0)S.wg=a;if(b>0)S.sg=b;
+ if(c>=20&&c!==S.w){S.w=c;const l=log(today());l.wkg=c;if(!l.wt){l.wt=1;xp(20)}}
+ if(d>=20&&d!==S.ideal){S.ideal=d;S.start=S.w}
+ GL.close();render()}
+function exp(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(S)],{type:'application/json'}));a.download='stride-backup.json';a.click()}
+function imp(e){const f=e.target.files[0];if(!f)return;f.text().then(t=>{const o=JSON.parse(t);if(!o.logs||!o.tasks)throw 0;S=o;save();location.reload()}).catch(()=>alert('That file is not a Stride backup.'))}
+function bg(){$('app').style.background=S.bg?`linear-gradient(#0f0c1b80,#0f0c1bbf),url("${S.bg}") center/cover`:TH_[S.theme]||TH_.fuji}
+function theme(n){S.theme=n;S.bg=null;bg();TH.close();sv()}
+function photo(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();
+ r.onload=()=>{const i=new Image();i.onload=()=>{const c=document.createElement('canvas'),s=Math.min(1,900/Math.max(i.width,i.height));c.width=i.width*s;c.height=i.height*s;c.getContext('2d').drawImage(i,0,0,c.width,c.height);S.bg=c.toDataURL('image/jpeg',.7);bg();TH.close();save()};i.src=r.result};r.readAsDataURL(f)}
+
+// ---- pocket mode ----
+let wl;
+async function pocket(on){$('pk').hidden=!on;
+ if(on){try{wl=await navigator.wakeLock.request('screen')}catch(e){}$('pks').textContent=log(today()).steps.toLocaleString()}
+ else{try{wl&&wl.release()}catch(e){}wl=null}}
+document.addEventListener('visibilitychange',()=>{
+ if(document.visibilityState==='hidden')save();
+ else{if(!$('pk').hidden&&'wakeLock' in navigator)navigator.wakeLock.request('screen').then(x=>wl=x).catch(()=>{});render()}});
+
+// ---- step sensor (needs 4 steps in a rhythm before counting, so a quick shake counts less) ----
+let last=0,prev=0,run=0;
+function motion(e){const a=e.accelerationIncludingGravity;if(!a||a.x===null)return;
+ const m=Math.hypot(a.x,a.y,a.z),n=Date.now();
+ if(m>11.8&&prev<=11.8&&n-last>320){run=n-last>1500?1:run+1;last=n;
+  if(run===4)stepNow(4);else if(run>4)stepNow(1)}
+ prev=m}
+function stepNow(n){steps(n,today());if(act===today())render();else sv();if(!$('pk').hidden)$('pks').textContent=log(today()).steps.toLocaleString()}
+function ui(){$('se').textContent='Sensor: '+(S.sensor?'ON':'OFF');sv()}
+function sensor(on){
+ if(!on){removeEventListener('devicemotion',motion);S.sensor=false;return ui()}
+ const go=()=>{addEventListener('devicemotion',motion);S.sensor=true;ui()},bad=()=>{S.sensor=false;ui()};
+ typeof DeviceMotionEvent!=='undefined'&&DeviceMotionEvent.requestPermission?DeviceMotionEvent.requestPermission().then(r=>r==='granted'?go():bad()).catch(bad):go()}
+
+bg();render();tab(0);if(S.sensor)sensor(true);else ui();initChat();if(!S.name)WE.showModal();setInterval(remind,6e4);
+if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();
+if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+</script></body></html>
